@@ -1,3 +1,5 @@
+package srs.model;
+
 public class Subtask extends Task {
     private final int epicId;
 
@@ -8,5 +10,5 @@ public class Subtask extends Task {
 
     public int getEpicId() {
         return epicId;
-    }
+    } //Subtask использует equals() и hashCode() от Task, так как сравниваем только по id (а он уникален для каждой задачи)
 }

@@ -1,3 +1,5 @@
+package srs.model;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,5 +17,5 @@ public class Epic extends Task {
 
     public void addSubtaskId(int subtaskId) {
         subtaskIds.add(subtaskId);
-    }
+    } //Epic использует equals() и hashCode() от Task, так как сравниваем только по id (а он уникален для каждой задачи)
 }

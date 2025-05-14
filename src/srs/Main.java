@@ -1,3 +1,11 @@
+package srs;
+
+import srs.manager.Manager;
+import srs.model.Epic;
+import srs.model.Status;
+import srs.model.Subtask;
+import srs.model.Task;
+
 public class Main {
     public static void main(String[] args) {
         Manager manager = new Manager();
