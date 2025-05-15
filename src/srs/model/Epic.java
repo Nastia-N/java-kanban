@@ -2,6 +2,7 @@ package srs.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Epic extends Task {
     private final List<Integer> subtaskIds;
@@ -17,5 +18,19 @@ public class Epic extends Task {
 
     public void addSubtaskId(int subtaskId) {
         subtaskIds.add(subtaskId);
-    } //Epic использует equals() и hashCode() от Task, так как сравниваем только по id (а он уникален для каждой задачи)
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(subtaskIds, epic.subtaskIds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subtaskIds);
+    }
 }
