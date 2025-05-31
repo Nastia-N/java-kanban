@@ -1,6 +1,7 @@
 package srs;
 
-import srs.manager.Manager;
+import srs.manager.Managers;
+import srs.manager.TaskManager;
 import srs.model.Epic;
 import srs.model.Status;
 import srs.model.Subtask;
@@ -8,7 +9,7 @@ import srs.model.Task;
 
 public class Main {
     public static void main(String[] args) {
-        Manager manager = new Manager();
+        TaskManager manager = Managers.getDefault();
 
         Task task1 = manager.createTask("Помыть посуду", "Помыть всю посуду вечером");
         manager.createTask("Сделать уроки", "Математика и русский язык");
@@ -19,6 +20,18 @@ public class Main {
 
         Epic epic2 = manager.createEpic("Ремонт", "Сделать ремонт в квартире");
         manager.createSubtask("Купить краску", "Выбрать цвет и купить 5 банок", epic2.getId());
+
+        manager.getTask(1);
+        manager.getTask(1);
+        manager.getSubtask(5);
+        manager.getEpic(3);
+        manager.getEpic(3);
+        manager.getSubtask(4);
+        manager.getSubtask(5);
+        manager.getTask(1);
+        manager.getSubtask(5);
+        manager.getEpic(3);
+        manager.getEpic(3);
 
         System.out.println(" ");
         System.out.println("======После добавления======");
@@ -40,12 +53,13 @@ public class Main {
         manager.deleteEpic(epic2.getId());
         printAllTasks(manager);
         System.out.println(" ");
+        printHistory(manager);
     }
 
-    private static void printAllTasks(Manager manager) {
+    private static void printAllTasks(TaskManager manager) {
         System.out.println("##Обычные задачи:");
         for (Task task : manager.getAllTasks()) {
-            System.out.println(task.getName() + ", описание: " + task.getDescription() + ", статус: " + task.getStatus() + ", id: "+ task.getId());
+            System.out.println(task.getName() + ", описание: " + task.getDescription() + ", статус: " + task.getStatus() + ", id: " + task.getId());
             System.out.println(" ");
         }
 
@@ -54,11 +68,17 @@ public class Main {
             System.out.println(" ");
             System.out.println("- " + epic.getName() + ", описание: " + epic.getDescription() + ", статус: " + epic.getStatus() + ", id: " + epic.getId());
 
-
             System.out.println("Подзадачи:");
             for (Subtask subtask : manager.getSubtasksByEpic(epic.getId())) {
                 System.out.println(subtask.getName() + ", описание: " + subtask.getDescription() + ", статус: " + subtask.getStatus() + ", id: " + subtask.getId());
             }
+        }
+    }
+
+    private static void printHistory(TaskManager manager) {
+        System.out.println("====== История ======");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
         }
     }
 }
