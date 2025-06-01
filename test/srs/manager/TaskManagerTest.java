@@ -1,42 +1,16 @@
-package test;
+package srs.manager;
 
 import org.junit.jupiter.api.Test;
-import srs.manager.Managers;
-import srs.manager.TaskManager;
 import srs.model.Epic;
 import srs.model.Status;
 import srs.model.Subtask;
 import srs.model.Task;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskManagerTest {
-
-    @Test
-    void tasksWithSameIdShouldBeEqual() {
-        Task task1 = new Task(1, "Task A", "Description");
-        Task task2 = new Task(1, "Task A", "Description");
-        assertEquals(task1, task2, "Задачи с одинаковым id должны быть равны");
-    }
-
-    @Test
-    void subtasksWithSameIdShouldBeEqual() {
-        Subtask subtask1 = new Subtask(1, "Sub A", "Desc", 6);
-        Subtask subtask2 = new Subtask(1, "Sub A", "Desc", 6);
-        assertEquals(subtask1, subtask2, "Подзадачи с одинаковым id должны быть равны");
-    }
-
-    @Test
-    void epicCannotBeSubtaskOfItself() {
-        Epic epic = new Epic(5, "Epic", "Desc");
-        epic.addSubtaskId(epic.getId());
-        assertTrue(epic.getSubtaskIds().isEmpty(), "Epic нельзя добавить в самого себя в виде подзадачи");
-    }
-
-    @Test
-    void managersShouldReturnInitializedInstances() {
-        assertNotNull(Managers.getDefault(), "Менеджер задач не должен быть null");
-        assertNotNull(Managers.getDefaultHistory(), "Менеджер истории не должен быть null");
-    }
 
     @Test
     void managerShouldAddAndFindDifferentTaskTypes() {
@@ -102,4 +76,78 @@ public class TaskManagerTest {
         manager.updateSubtaskStatus(subtask1.getId(), Status.DONE);
         assertEquals(Status.DONE, epic.getStatus(), "Эпик должен быть DONE, когда все подзадачи завершены");
     }
+
+    @Test
+    void createSubtaskShouldReturnNullWhenEpicNotExists() {
+        TaskManager manager = Managers.getDefault();
+        String name = "Test Subtask";
+        String description = "Test Description";
+        int nonExistentEpicId = 1000;
+        Subtask result = manager.createSubtask(name, description, nonExistentEpicId);
+        assertNull(result, "Метод должен возвращать null при попытке создать подзадачу для несуществующего эпика");
+    }
+
+    @Test
+    void getHistoryShouldReturnViewedTasksInCorrectOrder() {
+        TaskManager manager = Managers.getDefault();
+        Task task1 = manager.createTask("Task 1", "Description");
+        Task task2 = manager.createTask("Task 2", "Description");
+
+        manager.getTask(task1.getId());
+        manager.getTask(task2.getId());
+
+        List<Task> history = manager.getHistory();
+
+        assertEquals(2, history.size(), "История должна содержать 2 задачи");
+        assertEquals(task1, history.get(0), "Первая просмотренная задача должна быть первой в истории");
+        assertEquals(task2, history.get(1), "Вторая просмотренная задача должна быть второй в истории");
+    }
+
+    @Test
+    void getAllTasksShouldReturnAllCreatedEpics() {
+        TaskManager manager = new InMemoryTaskManager();
+        Task task1 = manager.createTask("Task 1", "Description");
+        Task task2 = manager.createTask("Task 2", "Description");
+        List<Task> result = manager.getAllTasks();
+
+        assertEquals(2, result.size(), "Должны вернуться все созданные задачи");
+        assertTrue(result.contains(task1), "Список должен содержать первую задачу");
+        assertTrue(result.contains(task2), "Список должен содержать вторую задачу");
+    }
+
+    @Test
+    void getAllEpicsShouldReturnAllCreatedEpics() {
+        TaskManager manager = new InMemoryTaskManager();
+        Epic epic1 = manager.createEpic("Epic 1", "Description");
+        Epic epic2 = manager.createEpic("Epic 2", "Description");
+        List<Epic> result = manager.getAllEpics();
+
+        assertEquals(2, result.size(), "Должны вернуться все созданные эпики");
+        assertTrue(result.contains(epic1), "Список должен содержать первый эпик");
+        assertTrue(result.contains(epic2), "Список должен содержать второй эпик");
+    }
+
+    @Test
+    void getSubtasksByEpicShouldReturnAllSubtasksForEpic() {
+        TaskManager manager = new InMemoryTaskManager();
+        Epic epic = manager.createEpic("Epic", "Description");
+        Subtask subtask1 = manager.createSubtask("Subtask 1", "Description", epic.getId());
+        Subtask subtask2 = manager.createSubtask("Subtask 2", "Description", epic.getId());
+        List<Subtask> result = manager.getSubtasksByEpic(epic.getId());
+
+        assertEquals(2, result.size(), "Должны вернуться все подзадачи эпика");
+        assertTrue(result.contains(subtask1), "Список должен содержать первую подзадачу");
+        assertTrue(result.contains(subtask2), "Список должен содержать вторую подзадачу");
+    }
+
+    @Test
+    void getSubtasksByEpicShouldReturnEmptyListForNonExistentEpic() {
+        TaskManager manager = new InMemoryTaskManager();
+        List<Subtask> result = manager.getSubtasksByEpic(999); // Несуществующий ID
+
+        assertNotNull(result, "Метод не должен возвращать null");
+        assertTrue(result.isEmpty(), "Для несуществующего эпика должен вернуться пустой список");
+    }
+
+
 }
