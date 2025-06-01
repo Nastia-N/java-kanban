@@ -1,5 +1,6 @@
 package srs.manager;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import srs.model.Epic;
 import srs.model.Status;
@@ -11,11 +12,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskManagerTest {
+    TaskManager manager;
+
+    @BeforeEach
+    void setUp() {
+        manager = new InMemoryTaskManager();
+    }
 
     @Test
     void managerShouldAddAndFindDifferentTaskTypes() {
-        TaskManager manager = Managers.getDefault();
-
         Task task = manager.createTask("Помыть посуду", "Помыть всю посуду вечером");
         assertNotNull(task, "Задача не создана");
         assertNotNull(manager.getTask(task.getId()), "Задача по id не найдена");
@@ -31,7 +36,6 @@ public class TaskManagerTest {
 
     @Test
     void taskShouldRemainUnchangedWhenAddedToManager() {
-        TaskManager manager = Managers.getDefault();
         Task originalTask = manager.createTask("Помыть посуду", "Помыть всю посуду вечером");
         Task addedTask = manager.getTask(originalTask.getId());
         assertEquals(originalTask.getName(), addedTask.getName(), "Имя изменилось");
@@ -41,8 +45,6 @@ public class TaskManagerTest {
 
     @Test
     void shouldRemoveTaskById() {
-        TaskManager manager = Managers.getDefault();
-
         Task task = manager.createTask("Помыть посуду", "Помыть всю посуду вечером");
         assertNotNull(task, "Задача не создана");
         assertNotNull(manager.getTask(task.getId()), "Задача по id не найдена");
@@ -61,7 +63,6 @@ public class TaskManagerTest {
 
     @Test
     void shouldUpdateTaskStatus() {
-        TaskManager manager = Managers.getDefault();
         Task task = manager.createTask("Task", "Description");
         manager.updateTaskStatus(task.getId(), Status.IN_PROGRESS);
         assertEquals(Status.IN_PROGRESS, manager.getTask(task.getId()).getStatus(), "Статус задачи должен обновиться");
@@ -79,7 +80,6 @@ public class TaskManagerTest {
 
     @Test
     void createSubtaskShouldReturnNullWhenEpicNotExists() {
-        TaskManager manager = Managers.getDefault();
         String name = "Test Subtask";
         String description = "Test Description";
         int nonExistentEpicId = 1000;
@@ -89,7 +89,6 @@ public class TaskManagerTest {
 
     @Test
     void getHistoryShouldReturnViewedTasksInCorrectOrder() {
-        TaskManager manager = Managers.getDefault();
         Task task1 = manager.createTask("Task 1", "Description");
         Task task2 = manager.createTask("Task 2", "Description");
 
@@ -105,7 +104,6 @@ public class TaskManagerTest {
 
     @Test
     void getAllTasksShouldReturnAllCreatedEpics() {
-        TaskManager manager = new InMemoryTaskManager();
         Task task1 = manager.createTask("Task 1", "Description");
         Task task2 = manager.createTask("Task 2", "Description");
         List<Task> result = manager.getAllTasks();
@@ -117,7 +115,6 @@ public class TaskManagerTest {
 
     @Test
     void getAllEpicsShouldReturnAllCreatedEpics() {
-        TaskManager manager = new InMemoryTaskManager();
         Epic epic1 = manager.createEpic("Epic 1", "Description");
         Epic epic2 = manager.createEpic("Epic 2", "Description");
         List<Epic> result = manager.getAllEpics();
@@ -129,7 +126,6 @@ public class TaskManagerTest {
 
     @Test
     void getSubtasksByEpicShouldReturnAllSubtasksForEpic() {
-        TaskManager manager = new InMemoryTaskManager();
         Epic epic = manager.createEpic("Epic", "Description");
         Subtask subtask1 = manager.createSubtask("Subtask 1", "Description", epic.getId());
         Subtask subtask2 = manager.createSubtask("Subtask 2", "Description", epic.getId());
@@ -142,9 +138,7 @@ public class TaskManagerTest {
 
     @Test
     void getSubtasksByEpicShouldReturnEmptyListForNonExistentEpic() {
-        TaskManager manager = new InMemoryTaskManager();
         List<Subtask> result = manager.getSubtasksByEpic(999); // Несуществующий ID
-
         assertNotNull(result, "Метод не должен возвращать null");
         assertTrue(result.isEmpty(), "Для несуществующего эпика должен вернуться пустой список");
     }
