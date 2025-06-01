@@ -1,6 +1,8 @@
-package srs.manager;
+package manager;
 
 import org.junit.jupiter.api.Test;
+import srs.manager.Managers;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ManagersTest {

@@ -1,7 +1,9 @@
-package srs.manager;
+package manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import srs.manager.InMemoryTaskManager;
+import srs.manager.TaskManager;
 import srs.model.Epic;
 import srs.model.Status;
 import srs.model.Subtask;
@@ -12,7 +14,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskManagerTest {
-    TaskManager manager;
+    private TaskManager manager;
 
     @BeforeEach
     void setUp() {

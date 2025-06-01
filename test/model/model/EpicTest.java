@@ -1,6 +1,7 @@
-package srs.model;
+package model.model;
 
 import org.junit.jupiter.api.Test;
+import srs.model.Epic;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

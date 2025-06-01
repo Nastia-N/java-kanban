@@ -1,7 +1,9 @@
-package srs.manager;
+package manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import srs.manager.HistoryManager;
+import srs.manager.InMemoryHistoryManager;
 import srs.model.Task;
 
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class HistoryManagerTest {
-    HistoryManager manager;
+    private HistoryManager manager;
 
     @BeforeEach
     void setUp() {

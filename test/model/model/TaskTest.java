@@ -1,6 +1,8 @@
-package srs.model;
+package model.model;
 
 import org.junit.jupiter.api.Test;
+import srs.model.Task;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TaskTest {
