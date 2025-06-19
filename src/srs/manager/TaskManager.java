@@ -13,10 +13,13 @@ public interface TaskManager {
     Subtask createSubtask(String name, String description, int epicId);
 
     void updateTaskStatus(int taskId, Status newStatus);
+
     void updateSubtaskStatus(int subtaskId, Status newStatus);
+
     void updateEpicStatus(int epicId);
 
     void deleteTask(int id);
+
     void deleteEpic(int id);
 
     List<Task> getHistory();
