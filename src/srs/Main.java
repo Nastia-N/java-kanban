@@ -33,10 +33,13 @@ public class Main {
         manager.getEpic(3);
         manager.getEpic(3);
 
+
         System.out.println(" ");
         System.out.println("======После добавления======");
         System.out.println(" ");
         printAllTasks(manager);
+        System.out.println(" ");
+        printHistory(manager);
         System.out.println(" ");
 
         System.out.println("======После изменения статусов======");

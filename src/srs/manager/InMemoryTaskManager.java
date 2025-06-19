@@ -5,10 +5,7 @@ import srs.model.Status;
 import srs.model.Subtask;
 import srs.model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private static int nextId = 1;
@@ -92,6 +89,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTask(int id) {
         tasks.remove(id);
+        history.remove(id);
     }
 
     @Override
@@ -102,27 +100,28 @@ public class InMemoryTaskManager implements TaskManager {
                 subtasks.remove(subtaskId);
             }
             epics.remove(id);
+            history.remove(id);
         }
     }
 
     @Override
     public Task getTask(int id) {
         Task task = tasks.get(id);
-        history.addToHistory(task);
+        history.add(task);
         return task;
     }
 
     @Override
     public Subtask getSubtask(int id) {
         Subtask subtask = subtasks.get(id);
-        history.addToHistory(subtask);
+        history.add(subtask);
         return subtask;
     }
 
     @Override
     public Epic getEpic(int id) {
         Epic epic = epics.get(id);
-        history.addToHistory(epic);
+        history.add(epic);
         return epic;
     }
 

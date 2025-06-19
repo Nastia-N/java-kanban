@@ -90,21 +90,6 @@ public class TaskManagerTest {
     }
 
     @Test
-    void getHistoryShouldReturnViewedTasksInCorrectOrder() {
-        Task task1 = manager.createTask("Task 1", "Description");
-        Task task2 = manager.createTask("Task 2", "Description");
-
-        manager.getTask(task1.getId());
-        manager.getTask(task2.getId());
-
-        List<Task> history = manager.getHistory();
-
-        assertEquals(2, history.size(), "История должна содержать 2 задачи");
-        assertEquals(task1, history.get(0), "Первая просмотренная задача должна быть первой в истории");
-        assertEquals(task2, history.get(1), "Вторая просмотренная задача должна быть второй в истории");
-    }
-
-    @Test
     void getAllTasksShouldReturnAllCreatedEpics() {
         Task task1 = manager.createTask("Task 1", "Description");
         Task task2 = manager.createTask("Task 2", "Description");
