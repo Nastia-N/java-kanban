@@ -4,18 +4,6 @@ import srs.model.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private static class Node {
-        Task task;
-        Node prev;
-        Node next;
-
-        Node(Task task, Node prev, Node next) {
-            this.task = task;
-            this.prev = prev;
-            this.next = next;
-        }
-    }
-
     private final Map<Integer, Node> nodeMap = new HashMap<>();
     private Node head;
     private Node tail;
@@ -23,16 +11,16 @@ public class InMemoryHistoryManager implements HistoryManager {
     private void removeNode(Node node) {
         if (node == null) return;
 
-        if (node.prev != null) {
-            node.prev.next = node.next;
+        if (node.getPrev() != null) {
+            node.getPrev().setNext(node.getNext());
         } else {
-            head = node.next;
+            head = node.getNext();
         }
 
-        if (node.next != null) {
-            node.next.prev = node.prev;
+        if (node.getNext() != null) {
+            node.getNext().setPrev(node.getPrev());
         } else {
-            tail = node.prev;
+            tail = node.getPrev();
         }
     }
 
@@ -42,7 +30,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (tail == null) {
             head = newNode;
         } else {
-            tail.next = newNode;
+            tail.setNext(newNode);
         }
 
         tail = newNode;
@@ -52,8 +40,8 @@ public class InMemoryHistoryManager implements HistoryManager {
         List<Task> result = new ArrayList<>();
         Node current = head;
         while (current != null) {
-            result.add(current.task);
-            current = current.next;
+            result.add(current.getTask());
+            current = current.getNext();
         }
         return result;
     }
