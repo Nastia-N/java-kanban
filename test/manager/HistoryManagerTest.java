@@ -21,24 +21,41 @@ public class HistoryManagerTest {
     @Test
     void shouldAddTaskToHistory() {
         Task task = new Task(1, "Test", "Description");
-        manager.addToHistory(task);
+        manager.add(task);
         assertEquals(1, manager.getHistory().size(), "История должна содержать 1 задачу");
-        assertEquals(task, manager.getHistory().getFirst(), "Добавленная задача должна быть в истории");
+        assertTrue(manager.getHistory().contains(task), "Добавленная задача должна быть в истории");
     }
 
     @Test
-    void shouldRemoveOldestTaskWhenHistoryIsFull() {
-        Task oldestTask = new Task(1, "Oldest", "Task");
+    void removeShouldDeleteTaskFromHistory() {
+        Task task1 = new Task(1, "Task1", "Desc");
+        Task task2 = new Task(2, "Task2", "Desc");
 
-        for (int i = 1; i <= InMemoryHistoryManager.MAX_HISTORY_SIZE; i++) {
-            manager.addToHistory(new Task(i, "Task " + i, "Desc"));
-        }
-        Task newTask = new Task(99, "New", "Task");
-        manager.addToHistory(newTask);
+        manager.add(task1);
+        manager.add(task2);
+        manager.remove(1);
+
+        assertEquals(1, manager.getHistory().size());
+        assertEquals(task2, manager.getHistory().getFirst());
+    }
+
+    @Test
+    void getHistoryShouldMaintainInsertionOrder() {
+        Task task1 = new Task(1, "Task1", "Desc");
+        Task task2 = new Task(2, "Task2", "Desc");
+
+        manager.add(task1);
+        manager.add(task2);
 
         List<Task> history = manager.getHistory();
-        assertEquals(InMemoryHistoryManager.MAX_HISTORY_SIZE, history.size(), "Размер истории не должен превышать MAX_HISTORY_SIZE");
-        assertFalse(history.contains(oldestTask), "Самая старая задача должна быть удалена");
-        assertTrue(history.contains(newTask), "Новая задача должна быть в истории");
+        assertEquals(2, history.size());
+        assertEquals(task1, history.get(0));
+        assertEquals(task2, history.get(1));
+    }
+
+    @Test
+    void addShouldNotAcceptNullTask() {
+        manager.add(null);
+        assertTrue(manager.getHistory().isEmpty());
     }
 }
