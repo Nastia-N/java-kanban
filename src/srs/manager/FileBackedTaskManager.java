@@ -1,0 +1,148 @@
+package srs.manager;
+
+import srs.model.*;
+
+import java.io.*;
+import java.util.List;
+import static java.nio.file.Files.*;
+
+public class FileBackedTaskManager extends InMemoryTaskManager {
+    private final File file;
+
+    public FileBackedTaskManager(File file) {
+        this.file = file;
+    }
+
+    @Override
+    public Task createTask(String name, String description) {
+        Task task = super.createTask(name, description);
+        save();
+        return task;
+    }
+
+    @Override
+    public Epic createEpic(String name, String description) {
+        Epic epic = super.createEpic(name, description);
+        save();
+        return epic;
+    }
+
+    @Override
+    public Subtask createSubtask(String name, String description, int epicId) {
+        Subtask subtask = super.createSubtask(name, description, epicId);
+        save();
+        return subtask;
+    }
+
+    @Override
+    public void updateTaskStatus(int taskId, Status newStatus) {
+        super.updateTaskStatus(taskId, newStatus);
+        save();
+    }
+
+    @Override
+    public void updateSubtaskStatus(int subtaskId, Status newStatus) {
+        super.updateSubtaskStatus(subtaskId, newStatus);
+        save();
+    }
+
+    @Override
+    public void deleteTask(int id) {
+        super.deleteTask(id);
+        save();
+    }
+
+    @Override
+    public void deleteEpic(int id) {
+        super.deleteEpic(id);
+        save();
+    }
+
+    private Task fromString(String value) {
+        String [] split = value.split(",");
+        Task result;
+
+        switch (Type.valueOf(split[1])) {
+            case TASK:
+                result = new Task(Integer.parseInt(split[0]), Type.valueOf(split[1]), split[2], split[3], Status.valueOf(split[4]));
+                break;
+            case EPIC:
+                result = new Epic(Integer.parseInt(split[0]), split[2], split[3], Status.valueOf(split[4]));
+                break;
+            case SUBTASK:
+                result = new Subtask(Integer.parseInt(split[0]), split[2], split[3], Status.valueOf(split[4]), Integer.parseInt(split[5]));
+                break;
+            default:
+                System.out.println("Такой формат не предусмотрен");
+                result = null;
+        }
+        return result;
+    }
+
+    private void save() {
+        try {
+            if (!exists(file.toPath())) {
+                createFile(file.toPath());
+            }
+
+            Writer fileWriter = new FileWriter(file.getAbsolutePath());
+
+            fileWriter.write("id,type,name,status,description,epic\n");
+            for (Task task : getAllTasks()) {
+                fileWriter.write(task.toCSVString());
+                fileWriter.write("\n");
+            }
+            for (Epic epic : getAllEpics()) {
+                fileWriter.write(epic.toCSVString());
+                fileWriter.write("\n");
+            }
+            for (Subtask subtask : getAllSubtasks()) {
+                fileWriter.write(subtask.toCSVString());
+                fileWriter.write("\n");
+                }
+
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка сохранения в файл", e);
+        }
+    }
+
+    public static FileBackedTaskManager loadFromFile(File file) {
+        FileBackedTaskManager manager = new FileBackedTaskManager(file);
+        int maxId = 0;
+
+        try {
+            List<String> lines = readAllLines(file.toPath());
+
+            for (int i = 1; i < lines.size(); i++) {
+                if (!lines.get(i).isBlank()) {
+                    Task task = manager.fromString(lines.get(i));
+                    if (task == null) {
+                        continue;
+                    }
+
+                    switch (task.getType()) {
+                        case TASK:
+                            manager.putTask(task);
+                            break;
+                        case EPIC:
+                            manager.putEpic((Epic) task);
+                            break;
+                        case SUBTASK:
+                            manager.putSubtask((Subtask) task);
+                        default:
+                            System.out.println("Такой формат не предусмотрен");
+                    }
+
+                    if (task.getId() > maxId) {
+                        maxId = task.getId();
+                    }
+                }
+            }
+            manager.updateNextId(maxId + 1);
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка загрузки из файла", e);
+        }
+        return manager;
+    }
+}
