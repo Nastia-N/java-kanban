@@ -7,9 +7,11 @@ import srs.model.Status;
 import srs.model.Subtask;
 import srs.model.Task;
 
+import java.io.File;
+
 public class Main {
     public static void main(String[] args) {
-        TaskManager manager = Managers.getDefault();
+        TaskManager manager = Managers.getFileBackedTM(new File("TaskData.csv"));
 
         Task task1 = manager.createTask("Помыть посуду", "Помыть всю посуду вечером");
         manager.createTask("Сделать уроки", "Математика и русский язык");

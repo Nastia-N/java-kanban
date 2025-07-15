@@ -4,15 +4,25 @@ import java.util.Objects;
 
 public class Task {
     private final int id;
+    private final Type type;
     private final String name;
     private final String description;
     private Status status;
 
-    public Task(int id, String name, String description) {
+    public Task(int id, Type type, String name, String description) {
         this.id = id;
+        this.type = type;
         this.name = name;
         this.description = description;
         this.status = Status.NEW;
+    }
+
+    public Task(int id, Type type, String name, String description, Status status) {
+        this.id = id;
+        this.type = type;
+        this.name = name;
+        this.description = description;
+        this.status = status;
     }
 
     public int getId() {
@@ -33,6 +43,14 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public String toCSVString() {
+        return getId() + "," + getType() + "," + getName() + "," + getDescription() + "," + getStatus();
     }
 
     @Override

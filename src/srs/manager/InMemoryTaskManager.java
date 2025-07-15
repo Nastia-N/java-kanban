@@ -1,9 +1,6 @@
 package srs.manager;
 
-import srs.model.Epic;
-import srs.model.Status;
-import srs.model.Subtask;
-import srs.model.Task;
+import srs.model.*;
 
 import java.util.*;
 
@@ -17,7 +14,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task createTask(String name, String description) {
-        Task task = new Task(nextId++, name, description);
+        Task task = new Task(nextId++, Type.TASK, name, description);
         tasks.put(task.getId(), task);
         return task;
     }
@@ -135,6 +132,10 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(epics.values());
     }
 
+    public List<Subtask> getAllSubtasks() {
+        return new ArrayList<>(subtasks.values());
+    }
+
     @Override
     public List<Subtask> getSubtasksByEpic(int epicId) {
         List<Subtask> result = new ArrayList<>();
@@ -149,5 +150,21 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return history.getHistory();
+    }
+
+    public void putTask(Task task) {
+        tasks.put(task.getId(), task);
+    }
+
+    public void putEpic(Epic epic) {
+        epics.put(epic.getId(), epic);
+    }
+
+    public void putSubtask(Subtask subtask) {
+        subtasks.put(subtask.getId(), subtask);
+    }
+
+    public void updateNextId(int newId) {
+        nextId = newId;
     }
 }

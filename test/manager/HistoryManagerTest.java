@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import srs.manager.HistoryManager;
 import srs.manager.InMemoryHistoryManager;
 import srs.model.Task;
+import srs.model.Type;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class HistoryManagerTest {
 
     @Test
     void shouldAddTaskToHistory() {
-        Task task = new Task(1, "Test", "Description");
+        Task task = new Task(1, Type.TASK, "Test", "Description");
         manager.add(task);
         assertEquals(1, manager.getHistory().size(), "История должна содержать 1 задачу");
         assertTrue(manager.getHistory().contains(task), "Добавленная задача должна быть в истории");
@@ -28,8 +29,8 @@ public class HistoryManagerTest {
 
     @Test
     void removeShouldDeleteTaskFromHistory() {
-        Task task1 = new Task(1, "Task1", "Desc");
-        Task task2 = new Task(2, "Task2", "Desc");
+        Task task1 = new Task(1, Type.TASK,"Task1", "Desc");
+        Task task2 = new Task(2, Type.TASK,"Task2", "Desc");
 
         manager.add(task1);
         manager.add(task2);
@@ -41,8 +42,8 @@ public class HistoryManagerTest {
 
     @Test
     void getHistoryShouldMaintainInsertionOrder() {
-        Task task1 = new Task(1, "Task1", "Desc");
-        Task task2 = new Task(2, "Task2", "Desc");
+        Task task1 = new Task(1, Type.TASK, "Task1", "Desc");
+        Task task2 = new Task(2, Type.TASK,"Task2", "Desc");
 
         manager.add(task1);
         manager.add(task2);
