@@ -1,17 +1,19 @@
 package srs.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Subtask extends Task {
     private final int epicId;
 
-    public Subtask(int id, String name, String description, int epicId) {
-        super(id, Type.SUBTASK, name, description);
+    public Subtask(int id, String name, String description, int epicId, Duration duration, LocalDateTime startTime) {
+        super(id, Type.SUBTASK, name, description, duration, startTime);
         this.epicId = epicId;
     }
 
-    public Subtask(int id, String name, String description, Status status, int epicId) {
-        super(id, Type.SUBTASK, name, description, status);
+    public Subtask(int id, String name, String description, Status status, int epicId, Duration duration, LocalDateTime startTime) {
+        super(id, Type.SUBTASK, name, description, status, duration, startTime);
         this.epicId = epicId;
     }
 
