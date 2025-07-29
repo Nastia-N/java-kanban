@@ -4,15 +4,19 @@ import srs.model.Epic;
 import srs.model.Status;
 import srs.model.Subtask;
 import srs.model.Task;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
 
-    Task createTask(String name, String description);
+    Task createTask(String name, String description, Duration duration, LocalDateTime startTime);
 
     Epic createEpic(String name, String description);
 
-    Subtask createSubtask(String name, String description, int epicId);
+    Subtask createSubtask(String name, String description, int epicId, Duration duration, LocalDateTime startTime);
 
     void updateTaskStatus(int taskId, Status newStatus);
 
@@ -37,4 +41,6 @@ public interface TaskManager {
     List<Epic> getAllEpics();
 
     List<Subtask> getSubtasksByEpic(int epicId);
+
+    Set<Task> getPrioritizedTasks();
 }

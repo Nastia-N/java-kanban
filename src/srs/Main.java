@@ -8,20 +8,22 @@ import srs.model.Subtask;
 import srs.model.Task;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) {
         TaskManager manager = Managers.getFileBackedTM(new File("TaskData.csv"));
 
-        Task task1 = manager.createTask("Помыть посуду", "Помыть всю посуду вечером");
-        manager.createTask("Сделать уроки", "Математика и русский язык");
+        Task task1 = manager.createTask("Помыть посуду", "Помыть всю посуду вечером", Duration.ofMinutes(20), LocalDateTime.of(2025, 7, 17, 22, 12));
+        manager.createTask("Сделать уроки", "Математика и русский язык", Duration.ofMinutes(40), LocalDateTime.of(2025, 7, 28, 16, 12));
 
         Epic epic1 = manager.createEpic("Переезд", "Организовать переезд в новый офис");
-        Subtask epic1Subtask1 = manager.createSubtask("Упаковать книги", "Упаковать все книги в коробки", epic1.getId());
-        Subtask epic1Subtask2 = manager.createSubtask("Нанять грузчиков", "Найти грузчиков на 10 утра", epic1.getId());
+        Subtask epic1Subtask1 = manager.createSubtask("Упаковать книги", "Упаковать все книги в коробки", epic1.getId(), Duration.ofMinutes(20), LocalDateTime.of(2025, 7, 16, 15, 12));
+        Subtask epic1Subtask2 = manager.createSubtask("Нанять грузчиков", "Найти грузчиков на 10 утра", epic1.getId(), Duration.ofMinutes(20), LocalDateTime.of(2025, 7, 17, 8, 5));
 
         Epic epic2 = manager.createEpic("Ремонт", "Сделать ремонт в квартире");
-        manager.createSubtask("Купить краску", "Выбрать цвет и купить 5 банок", epic2.getId());
+        manager.createSubtask("Купить краску", "Выбрать цвет и купить 5 банок", epic2.getId(), Duration.ofMinutes(30), LocalDateTime.of(2025, 7, 19, 12, 12));
 
         manager.getTask(1);
         manager.getTask(1);
@@ -78,11 +80,20 @@ public class Main {
                 System.out.println(subtask.getName() + ", описание: " + subtask.getDescription() + ", статус: " + subtask.getStatus() + ", id: " + subtask.getId());
             }
         }
+        System.out.println(" ");
+        printPrioritizedTasks(manager);
     }
 
     private static void printHistory(TaskManager manager) {
         System.out.println("====== История ======");
         for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
+    }
+
+    private static void printPrioritizedTasks(TaskManager manager) {
+        System.out.println("====== Приоритет ======");
+        for (Task task : manager.getPrioritizedTasks()) {
             System.out.println(task);
         }
     }

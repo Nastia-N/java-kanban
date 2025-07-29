@@ -3,33 +3,55 @@ package manager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import srs.manager.FileBackedTaskManager;
+import srs.model.Epic;
+import srs.model.Subtask;
+import srs.model.Task;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
-import static java.io.File.createTempFile;
-import static java.nio.file.Files.readString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static srs.manager.FileBackedTaskManager.loadFromFile;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class FileBackedTaskManagerTest {
+class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private File testFile;
-    private FileBackedTaskManager manager;
 
     @BeforeEach
+    @Override
     void setUp() throws IOException {
-        testFile = createTempFile("tasks", ".csv");
-        manager = new FileBackedTaskManager(testFile);
+        testFile = Files.createTempFile("tasks", ".csv").toFile();
+        manager = createTaskManager(); // Явная инициализация менеджера
+    }
+
+    @Override
+    protected FileBackedTaskManager createTaskManager() {
+        return new FileBackedTaskManager(testFile);
     }
 
     @Test
-    void tasksLoadFromFile() {
-        manager.createTask("Помыть посуду", "Помыть всю посуду вечером");
-        manager.createEpic("Переезд", "Организовать переезд в новый офис");
-        FileBackedTaskManager manager1 = loadFromFile(testFile);
-        assertEquals(1, manager1.getAllTasks().size(), "Количество Task не совпадает");
-        assertEquals(1, manager1.getAllEpics().size(), "Количество Epic не совпадает");
-        assertEquals("Task{id=1, name='Помыть посуду', description='Помыть всю посуду вечером', status=NEW}", manager1.getTask(1).toString(), "Задача не совпадает");
-        assertEquals("Task{id=2, name='Переезд', description='Организовать переезд в новый офис', status=NEW}", manager1.getEpic(2).toString(), "Задача не совпадает");
+    void shouldSaveAndLoadTimeParameters() throws IOException {
+        LocalDateTime startTime1 = LocalDateTime.of(2025, 6, 1, 10, 0);
+        LocalDateTime startTime2 = LocalDateTime.of(2025, 7, 1, 10, 0);
+        Duration duration = Duration.ofMinutes(30);
+
+        Task task = manager.createTask("Task", "Desc", duration, startTime1);
+        Epic epic = manager.createEpic("Epic", "Desc");
+        Subtask subtask = manager.createSubtask("Subtask", "Desc",
+                epic.getId(), Duration.ofHours(1), startTime2);
+
+        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(testFile);
+
+        assertAll(
+                () -> assertNotNull(loadedManager.getTask(task.getId()), "Задача не загрузилась"),
+                () -> assertEquals(startTime1, loadedManager.getTask(task.getId()).getStartTime(),
+                        "Время начала не совпадает"),
+                () -> assertEquals(duration, loadedManager.getTask(task.getId()).getDuration(),
+                        "Продолжительность не совпадает"),
+                () -> assertNotNull(loadedManager.getEpic(epic.getId()), "Эпик не загрузился"),
+                () -> assertEquals(startTime2, loadedManager.getEpic(epic.getId()).getStartTime(),
+                        "Время начала эпика не совпадает")
+        );
     }
 }

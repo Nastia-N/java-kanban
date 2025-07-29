@@ -3,6 +3,8 @@ package srs.manager;
 import srs.model.*;
 
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import static java.nio.file.Files.*;
 
@@ -14,8 +16,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Task createTask(String name, String description) {
-        Task task = super.createTask(name, description);
+    public Task createTask(String name, String description, Duration duration, LocalDateTime startTime) {
+        Task task = super.createTask(name, description, duration, startTime);
         save();
         return task;
     }
@@ -28,8 +30,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Subtask createSubtask(String name, String description, int epicId) {
-        Subtask subtask = super.createSubtask(name, description, epicId);
+    public Subtask createSubtask(String name, String description, int epicId, Duration duration, LocalDateTime startTime) {
+        Subtask subtask = super.createSubtask(name, description, epicId, duration, startTime);
         save();
         return subtask;
     }
@@ -64,13 +66,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         switch (Type.valueOf(split[1])) {
             case TASK:
-                result = new Task(Integer.parseInt(split[0]), Type.valueOf(split[1]), split[2], split[3], Status.valueOf(split[4]));
+                result = new Task(Integer.parseInt(split[0]), Type.valueOf(split[1]), split[2], split[3], Status.valueOf(split[4]), Duration.ofMinutes(Long.parseLong(split[5])), LocalDateTime.parse(split[6]));
                 break;
             case EPIC:
-                result = new Epic(Integer.parseInt(split[0]), split[2], split[3], Status.valueOf(split[4]));
+                result = new Epic(Integer.parseInt(split[0]), split[2], split[3], Status.valueOf(split[4]), Duration.ofMinutes(Long.parseLong(split[5])), LocalDateTime.parse(split[6]));
                 break;
             case SUBTASK:
-                result = new Subtask(Integer.parseInt(split[0]), split[2], split[3], Status.valueOf(split[4]), Integer.parseInt(split[5]));
+                result = new Subtask(Integer.parseInt(split[0]), split[2], split[3], Status.valueOf(split[4]), Integer.parseInt(split[7]), Duration.ofMinutes(Long.parseLong(split[5])), LocalDateTime.parse(split[6]));
                 break;
             default:
                 System.out.println("Такой формат не предусмотрен");
@@ -87,7 +89,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             Writer fileWriter = new FileWriter(file.getAbsolutePath());
 
-            fileWriter.write("id,type,name,status,description,epic\n");
+            fileWriter.write("id,type,name,status,description,duration,startTime,epic\n");
             for (Task task : getAllTasks()) {
                 fileWriter.write(task.toCSVString());
                 fileWriter.write("\n");
