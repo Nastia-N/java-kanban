@@ -17,9 +17,9 @@ public class HttpTaskServer {
             .setPrettyPrinting()
             .registerTypeAdapter(Duration.class, new DurationAdapter())
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-            .create();;
+            .create();
 
-    public static void main (String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         start(Managers.getDefault());
     }
 
