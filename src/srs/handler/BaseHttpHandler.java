@@ -9,8 +9,8 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 public class BaseHttpHandler {
-    TaskManager manager;
-    Gson gson;
+    protected TaskManager manager;
+    protected Gson gson;
 
     public BaseHttpHandler(TaskManager manager, Gson gson) {
         this.manager = manager;

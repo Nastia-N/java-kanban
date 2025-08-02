@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class HttpTaskManagerTasksTest {
 
-    TaskManager manager = new InMemoryTaskManager();
-    Gson gson = HttpTaskServer.getGson();
+    private final TaskManager manager = new InMemoryTaskManager();
+    private final Gson gson = HttpTaskServer.getGson();
 
     public HttpTaskManagerTasksTest() {
     }
