@@ -11,8 +11,8 @@ import java.io.File;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-public class Main {
-    public static void main(String[] args) {
+public class Main2 {
+    public static void main2(String[] args) {
         TaskManager manager = Managers.getFileBackedTM(new File("TaskData.csv"));
 
         Task task1 = manager.createTask("Помыть посуду", "Помыть всю посуду вечером", Duration.ofMinutes(20), LocalDateTime.of(2025, 7, 17, 22, 12));

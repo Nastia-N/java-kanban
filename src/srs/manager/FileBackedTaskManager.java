@@ -55,6 +55,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
+    public void deleteSubtask(int id) {
+        super.deleteSubtask(id);
+        save();
+    }
+
+    @Override
     public void deleteEpic(int id) {
         super.deleteEpic(id);
         save();
@@ -62,22 +68,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private Task fromString(String value) {
         String [] split = value.split(",");
-        Task result;
-
-        switch (Type.valueOf(split[1])) {
-            case TASK:
-                result = new Task(Integer.parseInt(split[0]), Type.valueOf(split[1]), split[2], split[3], Status.valueOf(split[4]), Duration.ofMinutes(Long.parseLong(split[5])), LocalDateTime.parse(split[6]));
-                break;
-            case EPIC:
-                result = new Epic(Integer.parseInt(split[0]), split[2], split[3], Status.valueOf(split[4]), Duration.ofMinutes(Long.parseLong(split[5])), LocalDateTime.parse(split[6]));
-                break;
-            case SUBTASK:
-                result = new Subtask(Integer.parseInt(split[0]), split[2], split[3], Status.valueOf(split[4]), Integer.parseInt(split[7]), Duration.ofMinutes(Long.parseLong(split[5])), LocalDateTime.parse(split[6]));
-                break;
-            default:
+        Task result = switch (Type.valueOf(split[1])) {
+            case TASK ->
+                    new Task(Integer.parseInt(split[0]), Type.valueOf(split[1]), split[2], split[3], Status.valueOf(split[4]), Duration.ofMinutes(Long.parseLong(split[5])), LocalDateTime.parse(split[6]));
+            case EPIC ->
+                    new Epic(Integer.parseInt(split[0]), split[2], split[3], Status.valueOf(split[4]), Duration.ofMinutes(Long.parseLong(split[5])), LocalDateTime.parse(split[6]));
+            case SUBTASK ->
+                    new Subtask(Integer.parseInt(split[0]), split[2], split[3], Status.valueOf(split[4]), Integer.parseInt(split[7]), Duration.ofMinutes(Long.parseLong(split[5])), LocalDateTime.parse(split[6]));
+            default -> {
                 System.out.println("Такой формат не предусмотрен");
-                result = null;
-        }
+                yield null;
+            }
+        };
+
         return result;
     }
 

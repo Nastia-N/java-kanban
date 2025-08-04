@@ -1,5 +1,6 @@
 package srs.manager;
 
+import srs.handler.NotFoundException;
 import srs.model.*;
 
 import java.time.Duration;
@@ -151,19 +152,48 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public void deleteTasks() {
+        tasks.clear();
+    }
+
+    @Override
+    public void deleteSubtask(int id) {
+        subtasks.remove(id);
+        history.remove(id);
+    }
+
+    @Override
+    public void deleteEpics() {
+        epics.clear();
+        subtasks.clear();
+    }
+
+    @Override
     public void deleteEpic(int id) {
         Epic epic = epics.get(id);
         if (epic != null) {
             epic.getSubtaskIds()
-                    .forEach(subtaskId -> subtasks.remove(subtaskId));
+                    .forEach(subtasks::remove);
             epics.remove(id);
             history.remove(id);
         }
     }
 
     @Override
+    public void deleteSubtasks() {
+        subtasks.clear();
+        for (Epic epic : epics.values()) {
+            epic.getSubtaskIds().clear();
+            updateEpicStatus(epic.getId());
+        }
+    }
+
+    @Override
     public Task getTask(int id) {
         Task task = tasks.get(id);
+        if (task == null) {
+            throw new NotFoundException("Неверный id");
+        }
         history.add(task);
         return task;
     }
@@ -171,6 +201,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtask(int id) {
         Subtask subtask = subtasks.get(id);
+        if (subtask == null) {
+            throw new NotFoundException("Неверный id");
+        }
         history.add(subtask);
         return subtask;
     }
@@ -178,6 +211,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpic(int id) {
         Epic epic = epics.get(id);
+        if (epic == null) {
+            throw new NotFoundException("Неверный id");
+        }
         history.add(epic);
         return epic;
     }
@@ -200,7 +236,7 @@ public class InMemoryTaskManager implements TaskManager {
     public List<Subtask> getSubtasksByEpic(int epicId) {
         if (epics.containsKey(epicId)) {
             return epics.get(epicId).getSubtaskIds().stream()
-                    .map(subtaskId -> subtasks.get(subtaskId))
+                    .map(subtasks::get)
                     .collect(Collectors.toList());
         }
         return new ArrayList<>();
